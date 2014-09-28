@@ -10,11 +10,11 @@ Copyright (c) August 19th, 2014, Steven K. Pollack
 Free for personal use. All other rights reserved.
 
 USE AT YOUR OWN RISK!
-This software is provided AS IS and does not make any claim that it actually works, or that it will not cause your
-computer to self-destruct or eat up your homework.
+This software is provided AS IS and does not make any claim that it actually works, or that it will not cause
+your computer to self-destruct or eat up your homework.
 
-Note that some calculated chords may be playable only by aliens with 10 tentacles. Please use your common sense.
-The author will not be responsible for any injuries from attempts at impossible fingerings.
+Note that some calculated chords may be playable only by aliens with 10 tentacles. Please use your common
+sense.  The author will not be responsible for any injuries from attempts at impossible fingerings.
 
 The author reserves the right to change the behavior of this software without prior notice
  									
@@ -56,7 +56,7 @@ def calc_fingerings(currentState):
 		fingerings = []
 		console.show_activity()
 		for position in range(0,12,span):
-			fingerings = fingerings + findFingerings(key, chordtype, tuning, position, span, option)
+			fingerings += findFingerings(key, chordtype, tuning, position, span, option)
 			#if no fingerings return, abandon the root, then 5th then 3rd.
 			for fingering in fingerings:
 				fingerMarker = fretboard.fingeringDrawPositions(key,chordtype,tuning,fingering)
