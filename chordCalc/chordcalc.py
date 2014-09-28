@@ -6,30 +6,30 @@ Version 0.3
 Copyright (c) 28 Dec 2008, Gek S. Low
 
 Modified to operate under Pythonista iOS ui environment
-Copyright (c) August 19th, 2014						Steven K. Pollack
+Copyright (c) August 19th, 2014, Steven K. Pollack
 Free for personal use. All other rights reserved.
 
 USE AT YOUR OWN RISK!
-This software is provided AS IS and does not make any claim that it actually works, or that it will not cause your computer to self-destruct or eat up your homework.
+This software is provided AS IS and does not make any claim that it actually works, or that it will not cause your
+computer to self-destruct or eat up your homework.
 
-Note that some calculated chords may be playable only by aliens with 10 tentacles. Please use your common sense. The author will not be responsible for any injuries from attempts at impossible fingerings.
+Note that some calculated chords may be playable only by aliens with 10 tentacles. Please use your common sense.
+The author will not be responsible for any injuries from attempts at impossible fingerings.
 
 The author reserves the right to change the behavior of this software without prior notice
-
-
  									
 View objects:
 	
-tableview_root - 			root tone of chord
-tableview_type - 			chord type
+tableview_root      - root tone of chord
+tableview_type      - chord type
 tableview_inst_tune - instrument/tuning selector
-tableview_filters     filters selection 
-view_neck					- 	drawing of neck/fingering
-button_up							previous chord shape/position
-button_down						next chord shape/position
-button_arp						play arpeggio
-button_chord					play chord 
-button_tuning					play the open strings
+tableview_filters   - filters selection 
+view_neck           - drawing of neck/fingering
+button_up           - previous chord shape/position
+button_down         - next chord shape/position
+button_arp          - play arpeggio
+button_chord        - play chord 
+button_tuning       - play the open strings
 
 """
 
@@ -38,27 +38,13 @@ from PIL import Image
 from copy import deepcopy
 from chordcalc_constants import * 
 
-
-
 def calc_fingerings(currentState):
 	try:
 		key = currentState['root']['noteValue']
 		note = currentState['root']['title']  # since "C" has a note value of zero, use note title as indicator
-	except:
-		return
-	try:
 		chordtype = currentState['chord']['fingering']
-	except:
-		return
-	try:
 		tuning = currentState['instrument']['notes']
-	except:
-		return
-	try:
 		instrument = currentState['instrument']
-	except:
-		return
-	try:
 		filters = currentState['filters']
 	except:
 		return
@@ -72,10 +58,9 @@ def calc_fingerings(currentState):
 		for position in range(0,12,span):
 			fingerings = fingerings + findFingerings(key, chordtype, tuning, position, span, option)
 			#if no fingerings return, abandon the root, then 5th then 3rd.
-			if fingerings:
-				for fingering in fingerings:
-					fingerMarker = fretboard.fingeringDrawPositions(key,chordtype,tuning,fingering)
-					fingerPositions.append(fingerMarker)
+			for fingering in fingerings:
+				fingerMarker = fretboard.fingeringDrawPositions(key,chordtype,tuning,fingering)
+				fingerPositions.append(fingerMarker)
 		result = []
 		for fingering,drawposition in zip(fingerings,fingerPositions):
 			chordTones = []
@@ -83,19 +68,15 @@ def calc_fingerings(currentState):
 				chordTones.append(entry[2])
 			result.append((drawposition,chordTones,fingering))
 		console.hide_activity()
-		if filters:
-			return apply_filters(filters, result)
-		else:
-			return result
-	
-	
+		return apply_filters(filters, result)
+
 filter_constraint = {'FULL_CHORD':("R b3 3 #5 5".split(),3)}	
 		
 def apply_filters(filters,fingerings):
-	filtered = []
-	temp_fingerings = fingerings
 	if not filters:
 		return fingerings
+	filtered = []
+	temp_fingerings = fingerings
 	if 'FULL_CHORD' in filters:   # must have at least R,3 and 5 triad
 		for fingering in temp_fingerings:	
 			notes,numNotes = filter_constraint['FULL_CHORD']		
@@ -175,9 +156,7 @@ def apply_filters(filters,fingerings):
 			if validChord:
 				filtered.append(fingering)
 		temp_fingerings = filtered
-					
-	
-					
+		
 	filtered = []
 	if 'LOW_3' in filters: 
 		for fingering in temp_fingerings:
@@ -214,12 +193,9 @@ def apply_filters(filters,fingerings):
 				filtered.append(fingering)
 		temp_fingerings = filtered
 		
-					
 	return temp_fingerings
-	
-		
-	
-	#given notes, return a string for tuning 
+
+#given notes, return a string for tuning 
 def tuningLabel(notes):
 	global NOTE_NAMES
 	note_string = ''
@@ -234,8 +210,7 @@ def tuningLabel(notes):
 			note_string += note_char.lower() + "'"
 		note_string += ' '
 	return note_string.strip()
-	
-	
+
 # Given a fingering, gets the scale note relative to the key
 def getScaleNotes(key, chordtype, tuning, fingering):
 	scalenotes = []
@@ -250,7 +225,6 @@ def getScaleNotes(key, chordtype, tuning, fingering):
 					scalenotes.append(SCALENOTES[chordrelnote])
 	return scalenotes
 
-
 # Finds the chord fingerings for a given tuning (number of strings implied)
 # Pos is the "barre" position, span is how many frets to cover
 # Returns a list of fingerings
@@ -262,7 +236,6 @@ def findFingerings(key, chordtype, tuning, pos, span, options):
 	# Find all candidates
 	candidates = findCandidates(validfrets)
 
-
 	# Filter out the invalid candidates
 	candidates = filterCandidates(key, chordtype, tuning, candidates, options)
 
@@ -270,7 +243,6 @@ def findFingerings(key, chordtype, tuning, pos, span, options):
 	# To be implemented...
 
 	# Perhaps also some sorting options?
-
 	return candidates
 
 # For a given list of starting frets and span, find the ones that are in the chord for that tuning
@@ -295,21 +267,17 @@ def findValidFrets(key, chordtype, tuning, pos, span):
 		strings.append(frets) 
 	return strings
 
-
-
 # Finds all candidate fingerings, given all valid frets
 # Includes strings that should not be played
 # Note that this is just a permutation function and is independent of keys, tunings or chords
 
-
-
 def findCandidates(validfrets):
+	if not validfrets:
+		return None
 	# Set up the counter which will track the permutations
 	max_counter = []
 	counter = []
 	candidatefrets = []
-	if not validfrets:
-		return None
 	#print "valid frets{}".format(validfrets)
 	for string in validfrets:
 		# Include the possibility of not playing the string
@@ -330,9 +298,7 @@ def findCandidates(validfrets):
 		# get the candidate
 		candidate = []
 		for string, fret in enumerate(counter):
-
 			candidate.append(candidatefrets[string][fret])
-
 		# increment counter, starting from highest index string
 		for i, v in enumerate(counter):
 			if counter[l-i] < max_counter[l-i]:
@@ -340,11 +306,8 @@ def findCandidates(validfrets):
 				break
 			else:
 				counter[l-i] = 0
-	
 		candidates += [candidate]
 	return candidates
-
-
 
 # Tests whether a fingering is valid
 # Should allow various possibilities - full chord, no 5th, no 3rd, no root, etc
@@ -369,7 +332,6 @@ def isValidChord(key, chordtype, tuning, candidate):
 					present[chordrelnote] = True
 					break
 
-
 	# do we accept this fingering? depends on the option
 	for note in present.keys():
 		if present[note] == False:
@@ -387,7 +349,6 @@ def isValidChord(key, chordtype, tuning, candidate):
 					continue
 		result = result & present[note]
 	return result
-
 
 # Tests if a given note is in the chord
 # Not used here
@@ -426,12 +387,10 @@ def getScaleNotes(key, chordtype, tuning, fingering):
 					scalenotes.append(SCALENOTES[chordrelnote])
 	return scalenotes
 
-	
 # Fretboard Class
 
 class Fretboard(ui.View): # display fingerboard and fingering of current chord/inversion/file
 #note that this is instanciated by the load process.  
-
 	def did_load(self):
 		global currentState,middle_label
 		self.currentstate = currentState
@@ -486,7 +445,6 @@ class Fretboard(ui.View): # display fingerboard and fingering of current chord/i
 		import math
 		return int(scalelength - (scalelength/math.pow(2,(fretnumber/float(self.numFrets)))))
 
-	
 	def fretboardYPos(self,fret):
 		return int((self.fretDistance(self.scale,fret) + self.fretDistance(self.scale,fret-1))/2.0)	
 		
@@ -498,7 +456,6 @@ class Fretboard(ui.View): # display fingerboard and fingering of current chord/i
 	def PathCenteredCircle(self,x,y,r):
 		""" return a path for a filled centered circle """
 		return ui.Path.oval(x -r, y -r, 2*r,2*r)		
-
 
 	def draw(self):
 		self.tuning = self.currentstate['instrument']
@@ -534,7 +491,7 @@ class Fretboard(ui.View): # display fingerboard and fingering of current chord/i
 				marker= self.PathCenteredCircle(int(xfraction*self.fbWidth), markery12, self.markerRadius)
 				marker.fill()
 		
-		#assume width is 1.5" and strings are 1/8" from edge
+			#assume width is 1.5" and strings are 1/8" from edge
 			numStrings,offset,ss = self.stringSpacing()
 			self.nutPosition = []
 			ui.set_color('grey')
@@ -581,10 +538,8 @@ class Fretboard(ui.View): # display fingerboard and fingering of current chord/i
 				middle_field.text = "root, 3rd" 
 				self.num_chords.text = "or 5th"
 
-
-				
-#####################################
-# fingering positions for drawing
+	#####################################
+	# fingering positions for drawing
 
 	def fingeringDrawPositions(self,key,chordtype,tuning,fingering):
 		""" given a fingering,chord and tuning information and virtual neck info,
@@ -599,10 +554,7 @@ class Fretboard(ui.View): # display fingerboard and fingering of current chord/i
 			xpos = offset + i*ss	
 			if fretPosition in [-1,0]: #marker at nut
 				ypos = int(0.5* self.nutOffset) 
-				if fretPosition:
-					atNut = 'X'
-				else:
-					atNut = 'O'
+				atNut = 'X' if fretPosition else 'O'
 			else:
 				ypos = self.fretboardYPos(fretPosition)
 			self.chordPositions.append((xpos,ypos,note,atNut))		
@@ -615,17 +567,12 @@ class Fretboard(ui.View): # display fingerboard and fingering of current chord/i
 # instrument/tuning object
 	
 class Instrument(object):	
-	
 	def __init__(self , currentstate, items, fb):
 		self.items = items
 		self.currentstate = currentstate
 		self.fb = fb
 		self.instrument = currentstate['instrument']
 
-
-
-
-		
 	def __getitem__(self,key):
 		try:
 			return self.tuning[key]
@@ -644,8 +591,7 @@ class Instrument(object):
 			return 'mandolin'
 		else:
 			return 'generic'
-	
-		
+
 # when new instrument is chosen, update the global and 
 # redraw the fretboard
 # also draw first chord for the current root/type 
@@ -659,10 +605,7 @@ class Instrument(object):
 # Support routine to switch checkmark on and off in table view entry
 		
 	def toggleChecked(self,row):
-		if self.isChecked(row):
-			self.items[row]['accessory_type'] = 'none'
-		else:
-			self.items[row]['accessory_type'] = 'checkmark'
+		self.items[row]['accessory_type'] = 'none' if self.isChecked(row) else 'checkmark'
 
 ##############################################
 # action for select
@@ -683,20 +626,13 @@ class Instrument(object):
 		                'octave':thisRow['octave'],
 		                'row':row}
 		self.currentstate['instrument'] = self.tuning
-		
-
 		self.filters.set_filters() 
 		self.tvFilters.reload_data()
-
-		
 		fingerings = calc_fingerings(self.currentstate)
-		
 		self.fb.set_fingerings(fingerings)
 		self.fb.set_needs_display()
 		tuningDisplay.title = tuningLabel(self.tuning['notes'])
-		
-		
-		
+
 	def tableview_number_of_sections(self, tableview):
 		# Return the number of sections (defaults to 1)
 		return 1
@@ -707,29 +643,22 @@ class Instrument(object):
 
 	def tableview_cell_for_row(self, tableview, section, row):
 		# Create and return a cell for the given section/row
-		import ui
+		# import ui
 		cell = ui.TableViewCell()
 		cell.text_label.text = self.items[row]['title']
 		cell.accessory_type = self.items[row]['accessory_type']
 		return cell
-				
 
-				
-				
 	def accumulateFingeringPositions(self,key,chordtype,tuning):
 		self.chordFingerings = []
 		for fingering in self.fingerings:
 			if fingering:
 				self.chordFingerings.append(self.fingeringDrawPositions(key,chordtype,tuning,fingering))
 
-
 ###################################################
 # chord type
 
-
-
 class Chord(object):
-	
 	def __init__(self , currentstate,items,fb):
 		self.items = items
 		self.currentstate = currentstate
@@ -758,16 +687,12 @@ class Chord(object):
 # Support routine to switch checkmark on and off in table view entry
 		
 	def toggleChecked(self,row):
-		if self.isChecked(row):
-			self.items[row]['accessory_type'] = 'none'
-		else:
-			self.items[row]['accessory_type'] = 'checkmark'
+		self.items[row]['accessory_type'] = 'none' if self.isChecked(row) else 'checkmark'
 
 ##############################################
 # action for select
 		
 	def tableview_did_select(self,tableView,section,row):	
-	
 		self.toggleChecked(row)
 		try:
 			self.toggleChecked(self.chord['row'])
@@ -776,13 +701,10 @@ class Chord(object):
 		tableView.reload_data()	
 		self.chord = {'title': self.items[row]['title'], 'fingering': self.items[row]['fingering'], 'row':row}
 		self.currentstate['chord'] = self.chord
-		
 		fingerings = calc_fingerings(self.currentstate)
-		
 		self.fb.set_fingerings(fingerings)
-		self.fb.set_needs_display()		
-		
-		
+		self.fb.set_needs_display()
+
 	def tableview_number_of_sections(self, tableview):
 		# Return the number of sections (defaults to 1)
 		return 1
@@ -800,34 +722,29 @@ class Chord(object):
 		
 	def get_chord(self):
 		return self.chord
-		
-		
 
-	
 ###################################################
 # root tone
 
-
-import ui
+# import ui
 
 class Root(object):
-	
 	def __init__(self , currentstate, items,fb):
 		self.items = items
 		self.currentstate = currentstate
 		self.root = currentstate['root']
 		self.fb = fb
-		
+
 	def __getitem__(self,key):
 		try:
 			return self.root[key]
 		except:
 			return None
-			
+
 	def reset(self):
 		for item in self.items:
 			item['accessory_type'] = 'none'
-			
+
 ##############################
 # Chapter ListView Select
 
@@ -838,16 +755,12 @@ class Root(object):
 # Support routine to switch checkmark on and off in table view entry
 		
 	def toggleChecked(self,row):
-		if self.isChecked(row):
-			self.items[row]['accessory_type'] = 'none'
-		else:
-			self.items[row]['accessory_type'] = 'checkmark'
+		self.items[row]['accessory_type'] = 'none' if self.isChecked(row) else 'checkmark'
 
 ##############################################
 # action for select
 		
 	def tableview_did_select(self,tableView,section,row):
-		
 		self.toggleChecked(row)
 		try:
 			self.toggleChecked(self.root['row'])
@@ -856,9 +769,7 @@ class Root(object):
 		tableView.reload_data()	
 		self.root = {'title': self.items[row]['title'], 'noteValue': self.items[row]['noteValue'], 'row':row}
 		self.currentstate['root'] = self.root
-		
 		fingerings = calc_fingerings(self.currentstate)
-		
 		self.fb.set_fingerings(fingerings)
 		self.fb.set_needs_display()
 		
@@ -876,14 +787,13 @@ class Root(object):
 		cell.text_label.text = self.items[row]['title']
 		cell.accessory_type = self.items[row]['accessory_type']
 		return cell
-		
+
 	def get_root(self):
 		try:
 			return self.root
 		except:
 			return None
-			
-			
+
 ##################################################			
 # 
 
@@ -906,11 +816,9 @@ class Filters(ui.View):
 			pass
 		for item in self.items:
 			item['accessory_type'] = 'none'
-			
-	
+
 	def reconsile_filters(self,filter):
 		if filter in FILTER_MUTUAL_EXCLUSION_LIST.keys():
-			
 			exclude = FILTER_MUTUAL_EXCLUSION_LIST[filter]
 			for exclusion in exclude:
 				if exclusion in self.filter_list:
@@ -918,9 +826,6 @@ class Filters(ui.View):
 					for item in self.items:
 						if item['title'] == exclusion:
 							item['accessory_type'] = 'none'
-					
-			
-		
 
 ##############################
 # Chapter ListView Select
@@ -932,10 +837,7 @@ class Filters(ui.View):
 # Support routine to switch checkmark on and off in table view entry
 		
 	def toggleChecked(self,row):
-		if self.isChecked(row):
-			self.items[row]['accessory_type'] = 'none'
-		else:
-			self.items[row]['accessory_type'] = 'checkmark'
+		self.items[row]['accessory_type'] = 'none' if self.isChecked(row) else 'checkmark'
 
 	def offChecked(self,row):
 		self.items[row]['accessory_type'] = 'none'
@@ -947,10 +849,8 @@ class Filters(ui.View):
 # action for select
 		
 	def tableview_did_select(self,tableView,section,row):	
-	
 		self.toggleChecked(row)
 		filtername = self.items[row]['title']
-
 		if self.isChecked(row):
 			if not filtername in self.filter_list:
 				self.filter_list.append(filtername)
@@ -958,9 +858,7 @@ class Filters(ui.View):
 		else:
 			if filtername in self.filter_list:
 				self.filter_list.remove(filtername)
-				
-
-		tableView.reload_data()	
+		tableView.reload_data()
 		self.currentstate['filters'] = self.filter_list
 		fingerings = calc_fingerings(self.currentstate)
 		self.fb.set_fingerings(fingerings)
@@ -983,15 +881,9 @@ class Filters(ui.View):
 		
 	def get_chord(self):
 		return self.chord
-		
-		
 
 #
 # Display routines
-
-
-
-
 
 def parseChordName(chordstr):
 	p = re.compile('([A-G][#b]{0,1})(.*)', re.IGNORECASE)
@@ -1001,15 +893,9 @@ def parseChordName(chordstr):
 	else:
 		return ['','']
 
-
-
-
-
 ##########################################
 ##########################################
 # S. Pollack Code below
-
-
 
 ###################################################
 # previous/next chord form
@@ -1027,7 +913,6 @@ def onPrevNext(button):
 	fretboard.set_chord_num(cn)
 	fretboard.set_needs_display()
 					
-	
 ###################################################
 # play arpeggio
 
@@ -1050,7 +935,6 @@ def play(button):
 			time.sleep(0.05)
 			if button.name == 'button_arp':
 				time.sleep(0.5)
-	
 
 def play_tuning(button):
 	if os.path.exists('waves'):
@@ -1070,8 +954,6 @@ def play_tuning(button):
 			waveName = 'waves/' + NOTE_FILE_NAMES[tone] + "{}.wav".format(octave)
 			sound.play_effect(waveName)
 			time.sleep(0.6)
-
-
 
 ##############################################
 if __name__ == "__main__":	
@@ -1122,4 +1004,3 @@ if __name__ == "__main__":
 	mainView['button_up'].action = mainView['button_down'].action = onPrevNext
 	
 	mainView.present()
-
