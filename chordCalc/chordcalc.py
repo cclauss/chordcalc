@@ -643,7 +643,6 @@ class Instrument(object):
 
 	def tableview_cell_for_row(self, tableview, section, row):
 		# Create and return a cell for the given section/row
-		# import ui
 		cell = ui.TableViewCell()
 		cell.text_label.text = self.items[row]['title']
 		cell.accessory_type = self.items[row]['accessory_type']
@@ -725,8 +724,6 @@ class Chord(object):
 
 ###################################################
 # root tone
-
-# import ui
 
 class Root(object):
 	def __init__(self , currentstate, items,fb):
