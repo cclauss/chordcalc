@@ -20,7 +20,7 @@ makeWaves.py
 
 chordcalc_constants.py
 
-- the various settings, tunings and  some filter related stuff.
+- the various settings, tunings, and some filter related stuff.
 
 to do:
 
