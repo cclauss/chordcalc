@@ -12,11 +12,11 @@ chordcalc.py
 
 -- If a chord cannot be presented because all its notes cannot be simultaneously played, the user are prompted to abandon the root, 3rd or 5th.  (mandolins in LOW_3 and HIGH_3 (see below) mode do this automatically).  Selected subsets of fingerings is accomplished using the filters.  LOW_3/4 filter forces the upper notes on guitar/mandolins to go  unplayed (dead).  Similar for HIGH_3/4.   Other filters are available.
 
-- You can play the sounds of the notes either as a chord or an arpeggio, and you can play the open strings to hear the tuning.  The former have labelled butons.  The later is the display above the "nut" of the fretboard.  If the sound files are not available, you are warned to un mkeWaves.py to created them  Takes about 10 minutes on an Ipad 2.  
+- You can play the sounds of the notes either as a chord or an arpeggio, and you can play the open strings to hear the tuning.  The former have labelled buttons.  The later is the display above the "nut" of the fretboard.  If the sound files are not available, you are warned to run makeWaves.py to created them  Takes about 10 minutes on an iPad 2.  
 
 makeWaves.py
 
-- creates 96 sound files of simulated plucked notes (first 8 harmonics, all of equal intensity) for the lower 8 octaves of a piano.  If you run it a second time, you are asked to confirm.  You may want to adjust the number/distributio of harmonic or the attack and decay envelop.  Enjoy.
+- creates 96 sound files of simulated plucked notes (first 8 harmonics, all of equal intensity) for the lower 8 octaves of a piano.  If you run it a second time, you are asked to confirm.  You may want to adjust the number/distribution of harmonic or the attack and decay envelop.  Enjoy.
 
 chordcalc_constants.py
 
